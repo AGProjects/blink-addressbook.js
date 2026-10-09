@@ -1,0 +1,25 @@
+{
+  "name": "blink-addressbook",
+  "version": "0.1.0",
+  "description": "Addressbook rules, contact payloads, origin stamps and change notifications shared by the Blink clients",
+  "author": "AG Projects",
+  "contributors": [
+    "Tijmen de Mes <tijmen@ag-projects.com>",
+    "Adrian Georgescu <ag@ag-projects.com>"
+  ],
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AGProjects/blink-addressbook.js.git"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "types"
+  ],
+  "dependencies": {
+    "crypto-js": "^3.3.0"
+  }
+}
