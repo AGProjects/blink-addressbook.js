@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# packed tarballs (npm pack)
+*.tgz
+
+# environment
+.env
+.env.*
+
+# other version control
+_darcs/
+
+# editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# operating systems
+.DS_Store
+Thumbs.db
