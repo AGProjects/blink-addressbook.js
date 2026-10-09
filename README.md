@@ -9,11 +9,11 @@ dependency is `crypto-js`, for the fingerprint in the origin stamps.
 
 ## Install
 
-    npm install github:<org>/blink-addressbook.js
+    npm install github:AGProjects/blink-addressbook.js
 
 or, with yarn:
 
-    yarn add github:<org>/blink-addressbook.js
+    yarn add github:AGProjects/blink-addressbook.js
 
 The TypeScript types come with the package: they are found through the `types` field of its `package.json`.
 
