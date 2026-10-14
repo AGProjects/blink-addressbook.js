@@ -13,6 +13,7 @@
 const rules = require('./src/addressbookRules');
 const ContactIndex = require('./src/contactIndex');
 const contactPayload = require('./src/contactPayload');
+const contactGroups = require('./src/contactGroups');
 const notify = require('./src/addressbookNotify');
 const AddressbookNotifier = require('./src/addressbookNotifier');
 const origin = require('./src/addressbookOrigin');
@@ -23,6 +24,7 @@ module.exports = {
     createRules: rules.create,  // createRules(context) -> the rules bound to one account
     ContactIndex,               // new ContactIndex(boundRules)
     contactPayload,             // forServer(contact, existing, rules, options): what a contact looks like on the server
+    contactGroups,              // buildGroups(serverGroups, knownIds), planMembership(serverGroups, contact, wanted): groups as a list shows them, and the writes that change a contact's groups
     notify,                     // tick wire format, send throttle, fetch scheduler
     AddressbookNotifier,        // timers and rules around them; sendTick/fetch are injected
     origin,                     // origin stamps: stampPayload(kind, payload, previous, { deviceId, agent, reason })
