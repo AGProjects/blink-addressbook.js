@@ -1,6 +1,6 @@
 {
   "name": "blink-addressbook",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Addressbook rules, contact payloads, origin stamps and change notifications shared by the Blink clients",
   "author": "AG Projects",
   "contributors": [
