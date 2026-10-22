@@ -126,4 +126,56 @@ function planMembership(serverGroups, contact, wanted, options) {
     return writes;
 }
 
-module.exports = { buildGroups, planMembership, isLocked, keyForName, titleForKey, sanitizeName, ALWAYS_OFFERED };
+/*
+ * The groups a contact's addresses decide, as opposed to the ones a user picks.
+ * Each entry says whether a contact belongs, from its addresses alone, so every
+ * client files the same contacts the same way. These kinds are LOCKED: an editor
+ * shows them but never changes them, planMembership never touches them, and this
+ * is the only thing that does.
+ *
+ *   tel   at least one address is a phone number (never a conference room)
+ *
+ * `accountRules` is addressbookRules bound to the account (uriType and
+ * isConferenceUri take the account's conference domain into account).
+ */
+const KIND_QUALIFIES = {
+    tel: (contact, accountRules) => list(contact && contact.uris).some(u =>
+        u && typeof u.uri === 'string' && !accountRules.isConferenceUri(u.uri) && accountRules.uriType(u.uri) === 'tel')
+};
+
+/*
+ * The writes that put `contact` in the kinded groups it belongs in and take it
+ * out of the ones it does not: [{ action: 'add' | 'update', group }]. Call it
+ * after a contact is added or edited, with the contact as it is now.
+ *
+ * Several server groups can share a kind: the first one gets the contact, the
+ * others lose it (as planMembership does). A kind the contact belongs in but no
+ * server group has yet is created, with its kind and reserved id. Nothing is
+ * written when the groups already say the right thing, so calling it after every
+ * edit is cheap.
+ */
+function planKindMembership(serverGroups, contact, accountRules) {
+    if (!contact || !contact.id || !accountRules) return [];
+    const writes = [];
+    for (const kind of Object.keys(KIND_QUALIFIES)) {
+        const qualifies = KIND_QUALIFIES[kind](contact, accountRules);
+        let seen = false;
+        for (const g of list(serverGroups)) {
+            if (!g || rules.isPurgeGroup(g.name) || rules.groupKey(g) !== kind) continue;
+            const members = list(g.contacts).filter(m => m && m.id);
+            const isMember = members.some(m => m.id === contact.id);
+            const wantsIt = qualifies && !seen;
+            seen = true;
+            if (wantsIt !== isMember) {
+                const contacts = wantsIt ? [...members, contact] : members.filter(m => m.id !== contact.id);
+                writes.push({ action: 'update', group: { id: g.id, name: g.name, attributes: { ...g.attributes }, contacts } });
+            }
+        }
+        if (qualifies && !seen) {
+            writes.push({ action: 'add', group: { id: rules.RESERVED_ID_FOR_KIND[kind], name: titleForKey(kind), attributes: { kind }, contacts: [contact] } });
+        }
+    }
+    return writes;
+}
+
+module.exports = { buildGroups, planMembership, planKindMembership, isLocked, keyForName, titleForKey, sanitizeName, ALWAYS_OFFERED };

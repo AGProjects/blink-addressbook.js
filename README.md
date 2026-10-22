@@ -31,7 +31,7 @@ const {
 | `rules` | The helpers that need no account: `isPhoneNumber`, `swapDomain`, `uriUsername`, the group helpers, `generateServerId`, ... |
 | `ContactIndex` | A Map-like index of contacts. Keys are canonical (`+31...` for numbers, the SIP bridge domain for conference rooms, lowercase otherwise), and `get`, `has` and `best` accept any spelling of an address. Several owners of one address are kept in a stable order (lowest id first). |
 | `contactPayload` | `forServer(contact, existing, rules, options)`: what a contact looks like on the server. Also `cachedRealName`, `adoptsDisplayName`, `nameReplacement`, `echoSpellings`. |
-| `contactGroups` | The groups as a contacts list shows them, and the writes that change a contact's groups: `buildGroups(serverGroups, knownIds)` (one entry per group key, with its member count), `planMembership(serverGroups, contact, { keys, names })` (the `add` / `update` writes that make the contact a member of exactly those groups; the app carries them out). Also `isLocked`, `keyForName`, `titleForKey`, `sanitizeName`, `ALWAYS_OFFERED`. |
+| `contactGroups` | The groups as a contacts list shows them, and the writes that change a contact's groups: `buildGroups(serverGroups, knownIds)` (one entry per group key, with its member count), `planMembership(serverGroups, contact, { keys, names })` (the `add` / `update` writes that make the contact a member of exactly those groups; the app carries them out), `planKindMembership(serverGroups, contact, accountRules)` (the same kind of writes for the groups a contact's addresses decide, today Tel: it files the contact where it belongs and takes it out where it does not; call it after a contact is added or edited, with the rules `createRules` returned). Also `isLocked`, `keyForName`, `titleForKey`, `sanitizeName`, `ALWAYS_OFFERED`. |
 | `notify` | The wire format of the `application/sylk-addressbook-update` tick (`buildTick`, `parseTick`, `isFresh`), the send throttle (`SendThrottle`) and the fetch scheduler (`FetchScheduler`). |
 | `AddressbookNotifier` | The timers and rules around the tick. `sendTick(payload)` and `fetch(done)` are injected, so it knows nothing of sylkrtc and runs against a fake clock. |
 | `origin` | Origin stamps (`stampPayload`: who changed an entry, when, and why), `contactFingerprint`, `groupFingerprint` and the helpers that compare two documents (`diffDocument`, `formatChanges`). |
@@ -98,7 +98,7 @@ rule in `addressbookRules`, not a special case in an app.
     src/addressbookOrigin.js    stamps and fingerprints
     src/contactIndex.js         ContactIndex
     src/contactPayload.js       forServer and the name rules
-    src/contactGroups.js        buildGroups, planMembership: groups for a list and an editor
+    src/contactGroups.js        buildGroups, planMembership, planKindMembership: groups for a list and an editor
     src/queueDecision.js        baseFor, decide
     types/                      TypeScript declarations (index.d.ts, types.d.ts, one per module)
 
